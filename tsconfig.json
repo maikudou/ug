@@ -1,0 +1,39 @@
+{
+  "include": ["./src/**/*.ts"],
+  "rootDirs": ["./src/firefox"],
+
+  "compilerOptions": {
+    /* Project options */
+    "allowJs": true,
+    "declaration": false,
+    "downlevelIteration": true,
+    "lib": ["es2019", "dom", "scripthost"],
+    "module": "esnext",
+    "outDir": "build",
+    "sourceMap": true,
+    "target": "ES2017",
+
+    /* Strict Checks */
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictBindCallApply": true,
+    "strictNullChecks": true,
+
+    /* Module Resolution */
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "./src",
+    "moduleResolution": "node",
+    "types": ["chrome", "firefox-webext-browser", "node"],
+
+    /* Linter Checks */
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": true,
+
+    /* Advanced */
+    "noEmitOnError": true,
+
+    "resolveJsonModule": true
+  }
+}

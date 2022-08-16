@@ -1,0 +1,35 @@
+{
+  "name": "ug-downloader",
+  "version": "1.0.0",
+  "description": "Ultimate-Guitar.com tab downloader",
+  "scripts": {
+    "compile": "rollup --config",
+    "watch": "rollup --config --watch",
+    "build": "./build.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maikudou/ug.git"
+  },
+  "keywords": [
+    "UG",
+    "Ultimate",
+    "guitar",
+    "tabs"
+  ],
+  "author": "Maikudou",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/maikudou/ug/issues"
+  },
+  "homepage": "https://github.com/maikudou/ug#readme",
+  "devDependencies": {
+    "@rollup/plugin-typescript": "^8.3.4",
+    "@types/chrome": "^0.0.193",
+    "@types/firefox-webext-browser": "^94.0.1",
+    "@types/node": "^18.7.2",
+    "rollup": "^2.77.3",
+    "tslib": "^2.4.0",
+    "typescript": "^4.7.4"
+  }
+}

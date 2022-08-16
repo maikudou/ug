@@ -1,21 +1,15 @@
 {
   "manifest_version": 2,
-  "name": "UG Downloader",
+  "name": "UG Tab Downloader",
   "version": "1.0",
 
-  "description": "UG Downloader",
+  "description": "Ultimate-Guitar.com tab files downloader",
 
-  "content_scripts": [
-    {
-      "matches": ["*://*.ultimate-guitar.com/*"],
-      "js": ["js.js"]
-    }
-  ],
   "background": {
     "scripts": ["bg.js"]
   },
   "browser_action": {
-    "default_title": "UG Download",
+    "default_title": "UG Tab Downloader",
     "default_popup": "popup.html"
   },
   "permissions": ["*://*.ultimate-guitar.com/*", "webRequest", "webRequestBlocking"]
