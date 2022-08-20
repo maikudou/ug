@@ -3,9 +3,15 @@
   "version": "1.0.0",
   "description": "Ultimate-Guitar.com tab downloader",
   "scripts": {
-    "compile": "rollup --config",
-    "watch": "rollup --config --watch",
-    "build": "./build.sh"
+    "build": "yarn build:firefox && yarn build:chrome",
+    "build:firefox": "yarn checkTypes && ./copy-static.sh firefox && yarn compile:firefox",
+    "build:chrome": "yarn checkTypes && ./copy-static.sh chrome && yarn compile:chrome",
+    "compile": "yarn compile:firefox && yarn compile:chrome",
+    "compile:firefox": "esbuild src/firefox/popup.ts src/firefox/bg.ts --bundle --outdir=dist --entry-names=[dir]/[name] --outbase=src --target=firefox57",
+    "compile:chrome": "esbuild src/chrome/popup.ts src/chrome/bg.ts --bundle --outdir=dist --entry-names=[dir]/[name] --outbase=src --target=chrome58",
+    "dev:firefox": "yarn build:firefox && yarn compile:firefox --watch",
+    "dev:chrome": "yarn build:chrome && yarn compile:chrome --watch",
+    "checkTypes": "yarn tsc --noEmit --project ."
   },
   "repository": {
     "type": "git",
@@ -24,12 +30,10 @@
   },
   "homepage": "https://github.com/maikudou/ug#readme",
   "devDependencies": {
-    "@rollup/plugin-typescript": "^8.3.4",
     "@types/chrome": "^0.0.193",
     "@types/firefox-webext-browser": "^94.0.1",
     "@types/node": "^18.7.2",
-    "rollup": "^2.77.3",
-    "tslib": "^2.4.0",
+    "esbuild": "^0.15.5",
     "typescript": "^4.7.4"
   }
 }
