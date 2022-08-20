@@ -1,0 +1,33 @@
+const target = process.argv[2]
+console.log(
+  JSON.stringify(
+    {
+      manifest_version: 2,
+      name: 'UG Tab Downloader',
+      version: '1.0',
+
+      description: 'Ultimate-Guitar.com tab files downloader',
+
+      background: {
+        scripts: ['bg.js']
+      },
+      ...(target === 'chrome'
+        ? {
+            content_scripts: [
+              {
+                matches: ['*://*.ultimate-guitar.com/'],
+                js: ['cs.js']
+              }
+            ]
+          }
+        : null),
+      browser_action: {
+        default_title: 'UG Tab Downloader',
+        default_popup: 'popup.html'
+      },
+      permissions: ['*://*.ultimate-guitar.com/*', 'webRequest', 'webRequestBlocking']
+    },
+    null,
+    2
+  )
+)

@@ -8,7 +8,7 @@
     "build:chrome": "yarn checkTypes && ./copy-static.sh chrome && yarn compile:chrome",
     "compile": "yarn compile:firefox && yarn compile:chrome",
     "compile:firefox": "esbuild src/firefox/popup.ts src/firefox/bg.ts --bundle --outdir=dist --entry-names=[dir]/[name] --outbase=src --target=firefox57",
-    "compile:chrome": "esbuild src/chrome/popup.ts src/chrome/bg.ts --bundle --outdir=dist --entry-names=[dir]/[name] --outbase=src --target=chrome58",
+    "compile:chrome": "esbuild src/chrome/popup.ts src/chrome/bg.ts src/chrome/cs.ts --bundle --outdir=dist --entry-names=[dir]/[name] --outbase=src --target=chrome58",
     "dev:firefox": "yarn build:firefox && yarn compile:firefox --watch",
     "dev:chrome": "yarn build:chrome && yarn compile:chrome --watch",
     "checkTypes": "yarn tsc --noEmit --project ."
