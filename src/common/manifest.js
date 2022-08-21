@@ -1,10 +1,11 @@
 const target = process.argv[2]
+const package = require('../../package.json')
 console.log(
   JSON.stringify(
     {
       manifest_version: 2,
       name: 'UG Tab Downloader',
-      version: '1.0',
+      version: package.version,
 
       description: 'Ultimate-Guitar.com tab files downloader',
 
