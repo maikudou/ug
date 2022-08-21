@@ -1,10 +1,6 @@
-import {
-  BGFile,
-  isDownloadableFileEntry,
-  BGToPopupMessage,
-  PopupToBGMessage,
-  DownloadableFile
-} from '../types'
+import { BGFile, BGToPopupMessage, PopupToBGMessage } from '../types'
+
+import { bgFilesToDownloadableFilesSerialized } from '../common/bg'
 
 import { FirefoxBrowserAPI } from './browserAPI'
 const browserAPI = new FirefoxBrowserAPI()
@@ -22,10 +18,6 @@ function updateFile(requestId: string, data: Partial<BGFile>) {
     ...files.get(requestId),
     ...data
   })
-}
-
-function bgFilesToDownloadableFiles(files: Map<string, BGFile>): Map<string, DownloadableFile> {
-  return new Map(Array.from(files.entries()).filter(isDownloadableFileEntry))
 }
 
 function removeFileByUrl(url: string) {
@@ -76,7 +68,7 @@ function checkReady(requestId: string) {
     try {
       sendBGToPopupMessage({
         type: 'files',
-        files: bgFilesToDownloadableFiles(files)
+        files: bgFilesToDownloadableFilesSerialized(files)
       }).catch(_ => {})
     } catch (_) {}
   }
@@ -144,7 +136,7 @@ browser.webRequest.onHeadersReceived.addListener(
 browserAPI.listenToMessage<PopupToBGMessage, BGToPopupMessage>((request, sendResponse) => {
   switch (request.type) {
     case 'ready':
-      sendResponse({ type: 'files', files: bgFilesToDownloadableFiles(files) })
+      sendResponse({ type: 'files', files: bgFilesToDownloadableFilesSerialized(files) })
       break
     case 'removeByUrl':
       removeFileByUrl(request.url)

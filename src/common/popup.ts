@@ -2,6 +2,7 @@ import {
   PopupFile,
   BGFile,
   DownloadableFile,
+  DownloadableFileSerialized,
   isDownloadbleFile,
   PopupToBGMessage,
   BGToPopupMessage
@@ -78,8 +79,19 @@ export class Popup {
   }
   constructor(private readonly _browserAPI: BrowserAPI) {
     _browserAPI.listenToMessage<BGToPopupMessage>(event => {
+      console.log(event)
       if (event.type == 'files') {
-        this.updateFiles(event.files)
+        this.updateFiles(
+          event.files.reduce((acc, value) => {
+            acc.set(value.id, {
+              name: value.name,
+              url: value.url,
+              data: new Uint8Array(value.data).buffer,
+              finished: value.finished
+            })
+            return acc
+          }, new Map<string, BGFile>())
+        )
       }
     })
 
@@ -87,8 +99,18 @@ export class Popup {
     // signal BG page what popup is ready to get files, if any
     _browserAPI
       .sendMessage<PopupToBGMessage, BGToPopupMessage>({ type: 'ready' })
-      .then(response => {
-        this.updateFiles(response.files)
+      ?.then(response => {
+        this.updateFiles(
+          response.files.reduce((acc, value) => {
+            acc.set(value.id, {
+              name: value.name,
+              url: value.url,
+              data: new Uint8Array(value.data).buffer,
+              finished: value.finished
+            })
+            return acc
+          }, new Map<string, BGFile>())
+        )
       })
   }
 }

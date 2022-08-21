@@ -16,7 +16,7 @@ console.log(
         ? {
             content_scripts: [
               {
-                matches: ['*://*.ultimate-guitar.com/'],
+                matches: ['*://tabs.ultimate-guitar.com/tab/*'],
                 js: ['cs.js']
               }
             ]

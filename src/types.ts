@@ -12,6 +12,14 @@ export interface DownloadableFile {
   url: string
 }
 
+export interface DownloadableFileSerialized {
+  id: string
+  data: number[]
+  finished: boolean
+  name: string
+  url: string
+}
+
 export function isDownloadbleFile(file: BGFile): file is DownloadableFile {
   return !!file.name && !!file.url
 }
@@ -44,7 +52,23 @@ export type PopupToBGMessage = PopupReadyMessage | PopupRemoveFileMessage
 
 export interface BGToPopupFilesMessage extends BaseMessage {
   type: 'files'
-  files: Map<string, DownloadableFile>
+  files: DownloadableFileSerialized[]
 }
 
 export type BGToPopupMessage = BGToPopupFilesMessage
+
+export interface BGToCSFileRequestMessage extends BaseMessage {
+  type: 'fileRequest'
+  requestId: string
+  url: string
+}
+
+export type BGToCSMessage = BGToCSFileRequestMessage
+
+export interface CSToBGFileResponseMessage extends BaseMessage {
+  type: 'fileResponse'
+  requestId: string
+  data: number[]
+}
+
+export type CSToBGMessage = CSToBGFileResponseMessage
