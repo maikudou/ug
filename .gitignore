@@ -102,6 +102,7 @@ typings/
 # TernJS port file
 .tern-port
 
-build
+build/
+dist/
 
 .DS_Store
