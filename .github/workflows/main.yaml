@@ -46,6 +46,8 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: firefox
+        run: |
+          zip --junk-paths firefox ./firefox/
       - name: Upload Firefox Asset
         id: upload-firefox-asset
         uses: actions/upload-release-asset@v1
@@ -60,6 +62,8 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: chrome
+        run: |
+          zip --junk-paths chrome ./chrome/
       - name: Upload Chrome Asset
         id: upload-chrome-asset
         uses: actions/upload-release-asset@v1
