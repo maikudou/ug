@@ -79,7 +79,6 @@ export class Popup {
   }
   constructor(private readonly _browserAPI: BrowserAPI) {
     _browserAPI.listenToMessage<BGToPopupMessage>(event => {
-      console.log(event)
       if (event.type == 'files') {
         this.updateFiles(
           event.files.reduce((acc, value) => {

@@ -113,14 +113,14 @@ browser.webRequest.onHeadersReceived.addListener(
             url: event.url
           })
         } else {
-          console.log("Can't find filename")
+          console.warn("Can't find filename")
         }
       }
 
       urlToRequestId.set(event.url, event.requestId)
       checkReady(event.requestId)
     } catch (e) {
-      console.log(e)
+      console.error(e)
     }
   },
   {

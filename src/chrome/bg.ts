@@ -79,7 +79,7 @@ chrome.webRequest.onResponseStarted.addListener(
       return
     }
     urlToRequestId.set(event.url, event.requestId)
-    console.log(event)
+
     const header =
       event.responseHeaders &&
       event.responseHeaders.find(({ name }) => name == 'content-disposition')?.value

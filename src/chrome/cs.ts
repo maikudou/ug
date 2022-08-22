@@ -9,11 +9,9 @@ const sendCSToBGMessage = (message: CSToBGMessage) => {
 browserAPI.listenToMessage<BGToCSMessage>(request => {
   switch (request.type) {
     case 'fileRequest':
-      console.log(request)
       fetch(request.url).then(response => {
         if (response.status == 200) {
           response.arrayBuffer().then(data => {
-            console.log('Got response', data.byteLength)
             sendCSToBGMessage({
               type: 'fileResponse',
               requestId: request.requestId,
