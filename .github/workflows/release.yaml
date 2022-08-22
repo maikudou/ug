@@ -40,6 +40,14 @@ jobs:
           release_name: Release ${{ github.ref }}
           draft: false
           prerelease: false
+      - name: Export upload_url
+        run: |
+          echo ${{ steps.create_release.outputs.upload_url }} > upload_url
+      - name: Save upload url
+        uses: actions/upload-artifact@v2
+        with:
+          name: upload_url
+          path: ./upload_url
   firefox:
     needs: release
     runs-on: ubuntu-latest
@@ -51,13 +59,20 @@ jobs:
       - name: Zip Firefox
         run: |
           zip -r firefox.zip ./*
+      - name: Download Firefox Artefact
+        uses: actions/download-artifact@v2
+        with:
+          name: upload_url
+      - name: Get upload_url
+        run: echo "::set-output name=upload_url::$(cat ./upload_url)"
+        id: upload_url
       - name: Upload Firefox Asset
         id: upload-firefox-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ steps.upload_url.outputs.upload_url }}
           asset_path: ./firefox.zip
           asset_name: firefox.zip
           asset_content_type: application/zip
@@ -71,15 +86,21 @@ jobs:
           name: chrome
       - name: Zip Chrome
         run: |
-          run: |
           zip -r chrome.zip ./*
+      - name: Download Firefox Artefact
+        uses: actions/download-artifact@v2
+        with:
+          name: upload_url
+      - name: Get upload_url
+        run: echo "::set-output name=upload_url::$(cat ./upload_url)"
+        id: upload_url
       - name: Upload Chrome Asset
         id: upload-chrome-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ steps.upload_url.outputs.upload_url }}
           asset_path: ./chrome.zip
           asset_name: chrome.zip
           asset_content_type: application/zip
