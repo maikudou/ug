@@ -42,7 +42,6 @@ jobs:
           prerelease: false
       - name: Export upload_url
         run: |
-          echo "${{ steps.create_release.outputs.upload_url }}"
           echo "${{ steps.create_release.outputs.upload_url }}" > upload_url
       - name: Save upload url
         uses: actions/upload-artifact@v2
