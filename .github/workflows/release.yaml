@@ -46,10 +46,7 @@ jobs:
           name: firefox
       - name: Zip Firefox
         run: |
-          ls
-          cd firefox
-          zip -r ../firefox.zip ./*
-          cd ..
+          zip -r firefox.zip ./*
       - name: Upload Firefox Asset
         id: upload-firefox-asset
         uses: actions/upload-release-asset@v1
@@ -67,9 +64,7 @@ jobs:
       - name: Zip Chrome
         run: |
           run: |
-          cd chrome
-          zip -r ../chrome.zip ./*
-          cd ..
+          zip -r chrome.zip ./*
       - name: Upload Chrome Asset
         id: upload-chrome-asset
         uses: actions/upload-release-asset@v1
