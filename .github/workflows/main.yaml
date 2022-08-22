@@ -17,8 +17,13 @@ jobs:
       - name: Build
         run: |
           yarn build
-      - name: Archive extensions artifacts
+      - name: Archive Firefox extension artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: extensions
-          path: dist/
+          name: firefox
+          path: dist/firefox/
+      - name: Archive Chrome extension artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: chrome
+          path: dist/chrome/
