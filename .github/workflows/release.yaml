@@ -46,6 +46,7 @@ jobs:
           name: firefox
       - name: Zip Firefox
         run: |
+          ls
           cd firefox
           zip -r ../firefox.zip ./*
           cd ..
