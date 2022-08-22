@@ -42,6 +42,7 @@ jobs:
           prerelease: false
       - name: Export upload_url
         run: |
+          echo ${{ steps.create_release.outputs.upload_url }}
           echo ${{ steps.create_release.outputs.upload_url }} > upload_url
       - name: Save upload url
         uses: actions/upload-artifact@v2
@@ -64,7 +65,9 @@ jobs:
         with:
           name: upload_url
       - name: Get upload_url
-        run: echo "::set-output name=upload_url::$(cat ./upload_url)"
+        run: |
+          cat ./upload_url
+          echo "::set-output name=upload_url::$(cat ./upload_url)"
         id: upload_url
       - name: Upload Firefox Asset
         id: upload-firefox-asset
