@@ -27,3 +27,46 @@ jobs:
         with:
           name: chrome
           path: dist/chrome/
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - name: Download Firefox Artefact
+        uses: actions/download-artifact@v2
+        with:
+          name: firefox
+      - name: Upload Firefox Asset
+        id: upload-firefox-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./firefox.zip
+          asset_name: firefox.zip
+          asset_content_type: application/zip
+      - name: Download Chrome Artefact
+        uses: actions/download-artifact@v2
+        with:
+          name: chrome
+      - name: Upload Chrome Asset
+        id: upload-chrome-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./chrome.zip
+          asset_name: chrome.zip
+          asset_content_type: application/zip
