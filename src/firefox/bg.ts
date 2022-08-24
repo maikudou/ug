@@ -1,4 +1,4 @@
-import { BGFile, BGToPopupMessage, PopupToBGMessage } from '../types'
+import { BGFile, BGToPopupMessage, PopupToBGMessage, BGToCSMessage } from '../types'
 
 import { bgFilesToDownloadableFilesSerialized } from '../common/bg'
 
@@ -6,6 +6,9 @@ import { FirefoxBrowserAPI } from './browserAPI'
 const browserAPI = new FirefoxBrowserAPI()
 const sendBGToPopupMessage = (message: BGToPopupMessage) => {
   return browserAPI.sendMessage<BGToPopupMessage, PopupToBGMessage>(message)
+}
+const sendBGToCSMessage = (tabId: number, message: BGToCSMessage) => {
+  return browserAPI.sendCSMessage<BGToCSMessage>(tabId, message)
 }
 
 const files = new Map<string, BGFile>()
@@ -78,10 +81,7 @@ function checkReady(requestId: string) {
 browser.webRequest.onBeforeRequest.addListener(
   onBeforeRequestDataListener,
   {
-    urls: [
-      '*://tabs.ultimate-guitar.com/download*',
-      '*://tabs.ultimate-guitar.com/tab/download/file*'
-    ]
+    urls: ['*://tabs.ultimate-guitar.com/download*']
   },
   ['blocking']
 )
@@ -89,6 +89,9 @@ browser.webRequest.onBeforeRequest.addListener(
 browser.webRequest.onHeadersReceived.addListener(
   event => {
     try {
+      if (event.statusCode !== 200) {
+        return
+      }
       const header =
         event.responseHeaders &&
         event.responseHeaders.find(({ name }) => name == 'content-disposition')?.value
@@ -99,22 +102,7 @@ browser.webRequest.onHeadersReceived.addListener(
         const filename = /filename=\"(.+)\";/.exec(header)?.[1]
         updateFile(event.requestId, { name: filename, url: event.url })
       } else {
-        // For "new" player they don't have such header,
-        // we have to try to extract file name from the URL
-        const result = /https:\/\/tabs\.ultimate-guitar\.com\/tab\/([^\\]+)\/([^\\]+)/.exec(
-          event.documentUrl || ''
-        )
-        if (result) {
-          const [_, band, song] = result
-          updateFile(event.requestId, {
-            name: `${band[0].toUpperCase()}${band.slice(1)} - ${song[0].toUpperCase()}${song
-              .slice(1)
-              .replace('-', () => ' ')}.gp`,
-            url: event.url
-          })
-        } else {
-          console.warn("Can't find filename")
-        }
+        console.warn("Can't find filename", event)
       }
 
       urlToRequestId.set(event.url, event.requestId)
@@ -124,12 +112,25 @@ browser.webRequest.onHeadersReceived.addListener(
     }
   },
   {
-    urls: [
-      '*://tabs.ultimate-guitar.com/download*',
-      '*://tabs.ultimate-guitar.com/tab/download/file*'
-    ]
+    urls: ['*://tabs.ultimate-guitar.com/download*']
   },
   ['responseHeaders']
+)
+
+browser.webRequest.onBeforeSendHeaders.addListener(
+  event => {
+    ;(event.requestHeaders || []).forEach(header => {
+      if (header.name === 'Cookie') {
+        // Tell backend we are still in the old player
+        header.value = header.value?.replace('ug_react_xtz_player=1', 'ug_react_xtz_player=4')
+      }
+    })
+    return event
+  },
+  {
+    urls: ['*://tabs.ultimate-guitar.com/download*']
+  },
+  ['blocking', 'requestHeaders']
 )
 
 // Listen for popup messages

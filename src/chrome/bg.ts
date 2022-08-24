@@ -46,6 +46,7 @@ function checkReady(requestId: string) {
 // New player, has referer
 chrome.webRequest.onSendHeaders.addListener(
   event => {
+    // Already processed this url
     if (urlToRequestId.has(event.url)) {
       return
     }
@@ -53,18 +54,54 @@ chrome.webRequest.onSendHeaders.addListener(
     const header =
       event.requestHeaders && event.requestHeaders.find(({ name }) => name == 'Referer')?.value
 
-    const result = /tabs\.ultimate-guitar\.com\/tab\/([^\\]+)\/(.+)-\d+$/.exec(header || '')
+    const result = /tabs\.ultimate-guitar\.com\/tab\/([^\\]+)\/(.+)-(\d+)$/.exec(header || '')
     if (result) {
-      const [_, author, name] = result
-      updateFile(event.requestId, {
-        name: `${author} - ${name.replace(/\-/g, ' ')}.gp`,
-        url: event.url
-      })
-      sendBGToCSMessage(event.tabId, {
-        type: 'fileRequest',
-        requestId: event.requestId,
-        url: event.url
-      })
+      const [_, _author, _name, id] = result
+      const url = `https://tabs.ultimate-guitar.com/download/public/${id}`
+      urlToRequestId.set(url, event.requestId)
+
+      // Set cookie to pretend it's an old player
+      chrome.cookies.get(
+        { name: 'ug_react_xtz_player', url: 'https://tabs.ultimate-guitar.com' },
+        res => {
+          chrome.cookies.set(
+            {
+              domain: res?.domain,
+              expirationDate: res?.expirationDate,
+              httpOnly: res?.httpOnly,
+              name: res?.name,
+              path: res?.path,
+              sameSite: res?.sameSite,
+              secure: res?.secure,
+              storeId: res?.storeId,
+              url: 'https://tabs.ultimate-guitar.com',
+              value: '4'
+            },
+            () => {
+              sendBGToCSMessage(event.tabId, {
+                type: 'fileRequest',
+                requestId: event.requestId,
+                url: url
+              })
+              // Reset cookie back to new player
+              setTimeout(() => {
+                chrome.cookies.set({
+                  domain: res?.domain,
+                  expirationDate: res?.expirationDate,
+                  httpOnly: res?.httpOnly,
+                  name: res?.name,
+                  path: res?.path,
+                  sameSite: res?.sameSite,
+                  secure: res?.secure,
+                  storeId: res?.storeId,
+                  url: 'https://tabs.ultimate-guitar.com',
+                  value: '1'
+                })
+              }, 1000)
+            }
+          )
+        }
+      )
     }
   },
   {
@@ -75,11 +112,6 @@ chrome.webRequest.onSendHeaders.addListener(
 // Old player, has filename
 chrome.webRequest.onResponseStarted.addListener(
   event => {
-    if (urlToRequestId.has(event.url)) {
-      return
-    }
-    urlToRequestId.set(event.url, event.requestId)
-
     const header =
       event.responseHeaders &&
       event.responseHeaders.find(({ name }) => name == 'content-disposition')?.value
@@ -88,15 +120,22 @@ chrome.webRequest.onResponseStarted.addListener(
       // For "old" player they have content-disposition header
       // what has filename in it
       const filename = /filename=\"(.+)\";/.exec(header)?.[1]
-      updateFile(event.requestId, {
+
+      // If we have this url for some other request id, update that
+      const requestId = urlToRequestId.get(event.url) || event.requestId
+      updateFile(requestId, {
         name: filename,
         url: event.url
       })
-      sendBGToCSMessage(event.tabId, {
-        type: 'fileRequest',
-        requestId: event.requestId,
-        url: event.url
-      })
+      // If it's the first time we see this url, request fetch
+      if (!urlToRequestId.has(event.url)) {
+        urlToRequestId.set(event.url, event.requestId)
+        sendBGToCSMessage(event.tabId, {
+          type: 'fileRequest',
+          requestId: event.requestId,
+          url: event.url
+        })
+      }
     }
   },
   {

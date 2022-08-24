@@ -4,7 +4,7 @@ console.log(
   JSON.stringify(
     {
       manifest_version: 2,
-      name: 'UG Tab Downloader',
+      name: 'UG Tabs Offline',
       version: package.version,
 
       description: 'Ultimate-Guitar.com tab files downloader',
@@ -23,10 +23,10 @@ console.log(
           }
         : null),
       browser_action: {
-        default_title: 'UG Tab Downloader',
+        default_title: 'UG Tabs Offline',
         default_popup: 'popup.html'
       },
-      permissions: ['*://*.ultimate-guitar.com/*', 'webRequest', 'webRequestBlocking']
+      permissions: ['*://*.ultimate-guitar.com/*', 'webRequest', 'webRequestBlocking', 'cookies']
     },
     null,
     2
