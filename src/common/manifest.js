@@ -9,6 +9,16 @@ console.log(
 
       description: 'Ultimate-Guitar.com tab files downloader',
 
+      icons: {
+        16: 'images/16x16.png',
+        32: 'images/32x32.png',
+        48: 'images/48x48.png',
+        64: 'images/32x32@2x.png',
+        96: 'images/48x48@2x.png',
+        128: 'images/128x128.png',
+        256: 'images/128x128@2x.png'
+      },
+
       background: {
         scripts: ['bg.js']
       },
