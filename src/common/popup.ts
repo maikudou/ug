@@ -42,13 +42,14 @@ export class Popup {
       }
       return acc
     }, new Map<string, DownloadableFile>())
-    if (uniqueFiles.size) {
-      const clearAll = document.createElement('span')
-      clearAll.addEventListener('click', () => this.removeAll())
-      clearAll.innerText = 'clear'
-      clearAll.className = 'clear'
-      document.getElementById('content')!.appendChild(clearAll)
+
+    if (!uniqueFiles.size) {
+      const hint = document.createElement('p')
+      hint.innerText = 'Visit ultimate-guitar.com tab page to see tabs here'
+      hint.className = 'hint'
+      document.getElementById('content')!.appendChild(hint)
     }
+
     Array.from(uniqueFiles.values()).forEach(file => {
       const blob = new Blob([file.data], { type: 'application/octet-stream' })
       const objectURL = URL.createObjectURL(blob)
@@ -58,11 +59,9 @@ export class Popup {
       cross.addEventListener('click', () => this.remove(file.url))
       cross.innerText = '🞨'
       cross.className = 'cross'
-      const space = document.createTextNode(' ')
 
       const div = document.createElement('div')
       div.appendChild(cross)
-      div.appendChild(space)
       div.appendChild(link)
 
       document.getElementById('content')!.appendChild(div)
@@ -76,6 +75,13 @@ export class Popup {
         element: div
       })
     })
+    if (uniqueFiles.size) {
+      const clearAll = document.createElement('span')
+      clearAll.addEventListener('click', () => this.removeAll())
+      clearAll.innerText = 'Remove all'
+      clearAll.className = 'clear'
+      document.getElementById('content')!.appendChild(clearAll)
+    }
   }
   constructor(private readonly _browserAPI: BrowserAPI) {
     _browserAPI.listenToMessage<BGToPopupMessage>(event => {
